@@ -24,7 +24,7 @@ namespace GameOfLife
             inputReader.ReadGliderStartPosition();
             
             Console.WriteLine();
-            Console.WriteLine($"Each generation will change every {PauseDuration.Milliseconds}ms.");
+            Console.WriteLine($"Each generation will change every {PauseDuration.Milliseconds} ms.");
 
             Console.WriteLine();
             Console.WriteLine("Press any key to start the game");
