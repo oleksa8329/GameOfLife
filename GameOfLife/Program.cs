@@ -1,36 +1,26 @@
 ﻿using System;
+using System.Threading;
+using GameOfLife.Core.Universe;
 
 namespace GameOfLife
 {
     public static class Program
     {
-        private static readonly TimeSpan PauseDuration = TimeSpan.FromMilliseconds(500);
+        private static readonly TimeSpan PauseDuration = TimeSpan.FromMilliseconds(400);
 
-        static void Main(string[] args)
+        public static void Main()
         {
-            var inputReader = new ConsoleInputReader();
-            ReadInputParameters(inputReader);
-            
-            var consoleDrawer = new ConsoleDrawer();
-            consoleDrawer.Clear();
-
-            consoleDrawer.SetHeaderText("Generation 0:");
-            consoleDrawer.DrawBox(12, 11);
-            consoleDrawer.DrawBox(13, 12);
-            consoleDrawer.DrawBox(11, 13);
-            consoleDrawer.DrawBox(12, 13);
-            consoleDrawer.DrawBox(13, 13);
-            
-            consoleDrawer.SetHeaderText("Generation 0. Pres any key to exit");
-            Console.ReadKey(false);
+            var input = ReadInputParameters();
+            var universe = BuildUniverseFromInputParameters(input);
+            PlayTheGame(universe);
         }
 
-        private static void ReadInputParameters(ConsoleInputReader inputReader)
+        private static ConsoleInputReader ReadInputParameters()
         {
             Console.WriteLine("Welcome to the game of life!");
 
+            var inputReader = new ConsoleInputReader();
             inputReader.ReadSize();
-
             inputReader.ReadGliderStartPosition();
             
             Console.WriteLine();
@@ -39,8 +29,50 @@ namespace GameOfLife
             Console.WriteLine();
             Console.WriteLine("Press any key to start the game");
             Console.ReadKey(false);
+
+            return inputReader;
         }
-        
-        
+
+        private static IGameUniverse BuildUniverseFromInputParameters(ConsoleInputReader input)
+        {
+            var builder = new GameUniverseBuilder();
+
+            builder.WithSize(input.InputSizeX, input.InputSizeY)
+                .WithCell(input.InputPositionX + 1, input.InputPositionY)
+                .WithCell(input.InputPositionX + 2, input.InputPositionY + 1)
+                .WithCell(input.InputPositionX, input.InputPositionY + 2)
+                .WithCell(input.InputPositionX + 1, input.InputPositionY + 2)
+                .WithCell(input.InputPositionX + 2, input.InputPositionY + 2);
+
+            return builder.Build();
+        }
+
+        private static void PlayTheGame(IGameUniverse universe)
+        {
+            var consoleDrawer = new ConsoleDrawer();
+
+            while (universe.HasLiveCells)
+            {
+                DrawCurrentGeneration(consoleDrawer, universe);
+                
+                Thread.Sleep(PauseDuration);
+
+                universe.Tick();
+            }
+
+            consoleDrawer.SetHeaderText($"Stopped at generation {universe.Generation}. Press any key to exit.");
+            Console.ReadKey(false);
+        }
+
+        private static void DrawCurrentGeneration(ConsoleDrawer consoleDrawer, IGameUniverse universe)
+        {
+            consoleDrawer.Clear();
+            consoleDrawer.SetHeaderText($"Generation {universe.Generation}:");
+
+            foreach (var cell in universe.LiveCells)
+            {
+                consoleDrawer.DrawBox(cell.X, cell.Y);
+            }
+        }
     }
 }

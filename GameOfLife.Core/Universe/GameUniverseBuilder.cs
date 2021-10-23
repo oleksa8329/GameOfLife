@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameOfLife.Core.Engine;
+using GameOfLife.Core.Engine.Rules;
 using GameOfLife.Core.Models;
 
 namespace GameOfLife.Core.Universe
@@ -64,8 +66,14 @@ namespace GameOfLife.Core.Universe
         /// <inheritdoc />
         public IGameUniverse Build()
         {
+            var gameEngine = new GameEngine(
+                new ConstantBordersAdjacentCellFinder(this._sizeX, this._sizeY), 
+                new LiveCellRule(), 
+                new DeadCellRule());
+
             var validCells = this._seedCells.Where(c => c.X < this._sizeX && c.Y < this._sizeY); // check upper borders
-            return new GameUniverse(this._sizeX, this._sizeY, validCells);
+
+            return new GameUniverse(gameEngine, validCells);
         }
     }
 }
