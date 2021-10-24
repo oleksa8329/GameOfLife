@@ -22,6 +22,7 @@ namespace GameOfLife
             var inputReader = new ConsoleInputReader();
             inputReader.ReadSize();
             inputReader.ReadGliderStartPosition();
+            inputReader.ReadBoundaryConditions();
             
             Console.WriteLine();
             Console.WriteLine($"Each generation will change every {PauseDuration.Milliseconds} ms.");
@@ -38,6 +39,7 @@ namespace GameOfLife
             var builder = new GameUniverseBuilder();
 
             builder.WithSize(input.InputSizeX, input.InputSizeY)
+                .WithBoundaryConditions(input.InputBoundaryConditions)
                 .WithCell(input.InputPositionX + 1, input.InputPositionY)
                 .WithCell(input.InputPositionX + 2, input.InputPositionY + 1)
                 .WithCell(input.InputPositionX, input.InputPositionY + 2)

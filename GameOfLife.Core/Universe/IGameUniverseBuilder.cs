@@ -1,4 +1,6 @@
-﻿namespace GameOfLife.Core.Universe
+﻿using GameOfLife.Core.Models;
+
+namespace GameOfLife.Core.Universe
 {
     /// <summary>
     /// Interface for creating <see cref="IGameUniverse"/> instances.
@@ -20,6 +22,8 @@
         /// <param name="y">Cell vertical position.</param>
         /// <returns>Builder object instance.</returns>
         IGameUniverseBuilder WithCell(int x, int y);
+
+        IGameUniverseBuilder WithBoundaryConditions(BoundaryConditions conditions);
 
         /// <summary>
         /// Creates a new instance of the <see cref="IGameUniverse"/> interface.

@@ -18,8 +18,8 @@ namespace GameOfLife.Core.Universe
         /// <param name="gameEngine">Game engine.</param>
         public GameUniverse(IGameEngine gameEngine, IEnumerable<Cell> seedCells)
         {
-            this._gameEngine = gameEngine;
-            this._liveCells = seedCells?.ToHashSet() ?? new HashSet<Cell>();
+            _gameEngine = gameEngine;
+            _liveCells = seedCells?.ToHashSet() ?? new HashSet<Cell>();
 
             this.Generation = 0;
         }
@@ -28,16 +28,16 @@ namespace GameOfLife.Core.Universe
         public int Generation { get; private set; }
 
         /// <inheritdoc />
-        public IEnumerable<Cell> LiveCells => this._liveCells;
+        public IEnumerable<Cell> LiveCells => _liveCells;
 
         /// <inheritdoc />
-        public bool HasLiveCells => this._liveCells.Any();
+        public bool HasLiveCells => _liveCells.Any();
 
         /// <inheritdoc />
         public void Tick()
         {
             var nextGeneration = _gameEngine.GetNextGeneration(_liveCells);
-            this._liveCells = nextGeneration;
+            _liveCells = nextGeneration;
 
             this.Generation++;
         }

@@ -16,7 +16,7 @@ namespace GameOfLife.Core.Tests.Engine
         public void SetUp()
         {
             _gameEngine = new GameEngine(
-                new ConstantBordersAdjacentCellFinder(25, 25),
+                new ConstantBordersCellFinder(25, 25),
                 new LiveCellRule(),
                 new DeadCellRule());
         }

@@ -12,6 +12,7 @@ namespace GameOfLife.Core.Universe
     {
         private int _sizeX;
         private int _sizeY;
+        private BoundaryConditions _conditions;
         private readonly List<Cell> _seedCells;
 
         /// <summary>
@@ -19,9 +20,10 @@ namespace GameOfLife.Core.Universe
         /// </summary>
         public GameUniverseBuilder()
         {
-            this._sizeX = 0;
-            this._sizeY = 0;
-            this._seedCells = new List<Cell>();
+            _sizeX = 0;
+            _sizeY = 0;
+            _conditions = BoundaryConditions.Constant;
+            _seedCells = new List<Cell>();
         }
 
         /// <inheritdoc />
@@ -37,8 +39,8 @@ namespace GameOfLife.Core.Universe
                 throw new ArgumentOutOfRangeException(nameof(sizeY), $"Universe {nameof(sizeY)} cannot be less than 0.");
             }
 
-            this._sizeX = sizeX;
-            this._sizeY = sizeY;
+            _sizeX = sizeX;
+            _sizeY = sizeY;
 
             return this;
         }
@@ -58,7 +60,14 @@ namespace GameOfLife.Core.Universe
 
             // Here we cannot check for _sizeX,_sizeY borders because WithSize() method can be called after WithCell()
 
-            this._seedCells.Add(new Cell(x, y));
+            _seedCells.Add(new Cell(x, y));
+
+            return this;
+        }
+
+        public IGameUniverseBuilder WithBoundaryConditions(BoundaryConditions conditions)
+        {
+            _conditions = conditions;
 
             return this;
         }
@@ -67,13 +76,26 @@ namespace GameOfLife.Core.Universe
         public IGameUniverse Build()
         {
             var gameEngine = new GameEngine(
-                new ConstantBordersAdjacentCellFinder(this._sizeX, this._sizeY), 
+                this.BuildAdjacentCellFinder(),
                 new LiveCellRule(), 
                 new DeadCellRule());
 
-            var validCells = this._seedCells.Where(c => c.X < this._sizeX && c.Y < this._sizeY); // check upper borders
+            var validCells = _seedCells.Where(c => c.X < _sizeX && c.Y < _sizeY); // check upper borders
 
             return new GameUniverse(gameEngine, validCells);
+        }
+
+        private IAdjacentCellFinder BuildAdjacentCellFinder()
+        {
+            switch (_conditions)
+            {
+                case BoundaryConditions.Periodic:
+                    return new PeriodicBordersCellFinder(_sizeX, _sizeY);
+
+                case BoundaryConditions.Constant:
+                default:
+                    return new ConstantBordersCellFinder(_sizeX, _sizeY);
+            }
         }
     }
 }

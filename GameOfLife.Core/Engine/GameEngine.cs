@@ -13,9 +13,9 @@ namespace GameOfLife.Core.Engine
 
         public GameEngine(IAdjacentCellFinder adjacentCellFinder, ICellRule liveCellRule, ICellRule deadCellRule)
         {
-            this._adjacentCellFinder = adjacentCellFinder;
-            this._liveCellRule = liveCellRule;
-            this._deadCellRule = deadCellRule;
+            _adjacentCellFinder = adjacentCellFinder;
+            _liveCellRule = liveCellRule;
+            _deadCellRule = deadCellRule;
         }
 
         public HashSet<Cell> GetNextGeneration(HashSet<Cell> currentLiveCells)
@@ -30,7 +30,7 @@ namespace GameOfLife.Core.Engine
 
             foreach (var cell in currentLiveCells)
             {
-                var adjacentCells = this._adjacentCellFinder.FindAdjacentCells(cell);
+                var adjacentCells = _adjacentCellFinder.FindAdjacentCells(cell);
                 var liveNeighbours = this.FilterLiveCells(adjacentCells, currentLiveCells);
                 if (_liveCellRule.ShouldLive(liveNeighbours.Count))
                 {
@@ -46,7 +46,7 @@ namespace GameOfLife.Core.Engine
 
             foreach (var cell in currentDeadCells)
             {
-                var adjacentCells = this._adjacentCellFinder.FindAdjacentCells(cell);
+                var adjacentCells = _adjacentCellFinder.FindAdjacentCells(cell);
                 var liveNeighbours = this.FilterLiveCells(adjacentCells, currentLiveCells);
                 if (_deadCellRule.ShouldLive(liveNeighbours.Count))
                 {
